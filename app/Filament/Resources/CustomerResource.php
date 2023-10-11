@@ -8,10 +8,17 @@ use App\Models\Customer;
 use App\Models\PipelineStage;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerResource extends Resource
 {
@@ -23,36 +30,61 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name')
-                    ->label(__('First name'))
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('last_name')
-                    ->label(__('Last name'))
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->label(__('Email'))
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone_number')
-                    ->label(__('Phone number'))
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->label(__('Description'))
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('lead_source_id')
-                    ->label(__('Lead source'))
-                    ->relationship('leadSource', 'name'),
-                Forms\Components\Select::make('tags')
-                    ->label(__('Tags'))
-                    ->relationship('tags', 'name')
-                    ->multiple(),
-                Forms\Components\Select::make('pipeline_stage_id')
-                    ->label(__('Pipeline stage'))
-                    ->relationship('pipelineStage', 'name', function ($query) {
-                        $query->orderBy('position', 'asc');
-                    })
-                    ->default(PipelineStage::where('is_default', true)->first()?->id),
+                Forms\Components\Section::make(__('Customer Details'))
+                    ->schema([
+                        Forms\Components\TextInput::make('first_name')
+                            ->label(__('First name'))
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('last_name')
+                            ->label(__('Last name'))
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->label(__('Email'))
+                            ->email()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone_number')
+                            ->label(__('Phone number'))
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('description')
+                            ->label(__('Description'))
+                            ->maxLength(65535)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(),
+                Forms\Components\Section::make(__('Lead Details'))
+                    ->schema([
+                        Forms\Components\Select::make('lead_source_id')
+                            ->label(__('Lead source'))
+                            ->relationship('leadSource', 'name'),
+                        Forms\Components\Select::make('tags')
+                            ->label(__('Tags'))
+                            ->relationship('tags', 'name')
+                            ->multiple(),
+                        Forms\Components\Select::make('pipeline_stage_id')
+                            ->label(__('Pipeline stage'))
+                            ->relationship('pipelineStage', 'name', function ($query) {
+                                $query->orderBy('position', 'asc');
+                            })
+                            ->default(PipelineStage::where('is_default', true)->first()?->id)
+                    ])
+                    ->columns(3),
+                Forms\Components\Section::make(__('Documents'))
+                    ->visibleOn('edit')
+                    ->schema([
+                        Forms\Components\Repeater::make('customerDocuments')
+                            ->relationship('customerDocuments')
+                            ->hiddenLabel()
+                            ->reorderable(false)
+                            ->addActionLabel(__('Add Document'))
+                            ->schema([
+                                Forms\Components\FileUpload::make('file_path')
+                                    ->label(__('File path'))
+                                    ->required(),
+                                Forms\Components\Textarea::make('comments')
+                                    ->label(__('Comments')),
+                            ])
+                            ->columns()
+                    ])
             ]);
     }
 
@@ -72,6 +104,7 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
+            'view' => Pages\ViewCustomer::route('/{record}'),
         ];
     }
 
@@ -80,6 +113,65 @@ class CustomerResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function infoList(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make(__('Personal Information'))
+                    ->schema([
+                        TextEntry::make('first_name')
+                            ->label(__('First name')),
+                        TextEntry::make('last_name')
+                            ->label(__('Last name')),
+                    ])
+                    ->columns(),
+                Section::make(__('Contact Information'))
+                    ->schema([
+                        TextEntry::make('email')
+                            ->label(__('Email')),
+                        TextEntry::make('phone_number')
+                            ->label(__('Phone number')),
+                    ])
+                    ->columns(),
+                Section::make(__('Additional Details'))
+                    ->schema([
+                        TextEntry::make('description')
+                            ->label(__('Description')),
+                    ]),
+                Section::make(__('Lead and Stage Information'))
+                    ->schema([
+                        TextEntry::make('leadSource.name')
+                            ->label(__('Lead source')),
+                        TextEntry::make('pipelineStage.name')
+                            ->label(__('Pipeline stage')),
+                    ])
+                    ->columns(),
+                Section::make(__('Documents'))
+                    ->hidden(fn($record) => $record->customerDocuments->isEmpty())
+                    ->schema([
+                        RepeatableEntry::make('customerDocuments')
+                            ->hiddenLabel()
+                            ->schema([
+                                TextEntry::make('file_path')
+                                    ->label(__('Document'))
+                                    ->formatStateUsing(fn() => __('Download Document'))
+                                    ->url(fn($record) => Storage::url($record->file_path), true)
+                                    ->badge()
+                                    ->color(Color::Blue),
+                                TextEntry::make('comments'),
+                            ])
+                            ->columns()
+                    ]),
+                Section::make(__('Pipeline Stage History and Notes'))
+                    ->schema([
+                        ViewEntry::make('pipelineStageLogs')
+                            ->label('')
+                            ->view('infolists.components.pipeline-stage-history-list')
+                    ])
+                    ->collapsible()
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -122,7 +214,10 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
                 Tables\Actions\Action::make('Move to Stage')
                     ->label(__('Move to Stage'))
                     ->icon('heroicon-m-pencil-square')
@@ -148,6 +243,13 @@ class CustomerResource extends Resource
                             ->send();
                     }),
             ])
+            ->recordUrl(function ($record) {
+                if ($record->trashed()) {
+                    return null;
+                }
+
+                return Pages\ViewCustomer::getUrl([$record->id]);
+            })
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

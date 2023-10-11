@@ -44,6 +44,11 @@ class Customer extends Model
         });
     }
 
+    public function customerDocuments(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public function leadSource(): BelongsTo
     {
         return $this->belongsTo(LeadSource::class);
