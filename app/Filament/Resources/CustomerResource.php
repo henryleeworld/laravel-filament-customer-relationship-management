@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
+use App\Models\CustomField;
 use App\Models\PipelineStage;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -68,6 +70,31 @@ class CustomerResource extends Resource
                             ->default(PipelineStage::where('is_default', true)->first()?->id)
                     ])
                     ->columns(3),
+                Forms\Components\Section::make(__('Additional fields'))
+                    ->schema([
+                        Forms\Components\Repeater::make('fields')
+                            ->hiddenLabel()
+                            ->relationship('customFields')
+                            ->schema([
+                                Forms\Components\Select::make('custom_field_id')
+                                    ->label(__('Field Type'))
+                                    ->options(CustomField::pluck('name', 'id')->toArray())
+                                    ->disableOptionWhen(function ($value, $state, Get $get) {
+                                        return collect($get('../*.custom_field_id'))
+                                            ->reject(fn($id) => $id === $state)
+                                            ->filter()
+                                            ->contains($value);
+                                    })
+                                    ->required()
+                                    ->searchable()
+                                    ->live(),
+                                Forms\Components\TextInput::make('value')
+                                    ->label(__('Value'))
+                                    ->required()
+                            ])
+                            ->addActionLabel(__('Add another Field'))
+                            ->columns(),
+                    ]),
                 Forms\Components\Section::make(__('Documents'))
                     ->visibleOn('edit')
                     ->schema([
@@ -148,6 +175,16 @@ class CustomerResource extends Resource
                             ->label(__('Pipeline stage')),
                     ])
                     ->columns(),
+                Section::make(__('Additional fields'))
+                    ->hidden(fn($record) => $record->customFields->isEmpty())
+                    ->schema(
+                        fn($record) => $record->customFields->map(function ($customField) {
+                            return TextEntry::make($customField->customField->name)
+                                ->label($customField->customField->name)
+                                ->default($customField->value);
+                        })->toArray()
+                    )
+                    ->columns(),
                 Section::make(__('Documents'))
                     ->hidden(fn($record) => $record->customerDocuments->isEmpty())
                     ->schema([
@@ -220,6 +257,7 @@ class CustomerResource extends Resource
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\Action::make('Move to Stage')
                     ->label(__('Move to Stage'))
+                    ->hidden(fn($record) => $record->trashed())
                     ->icon('heroicon-m-pencil-square')
                     ->form([
                         Forms\Components\Select::make('pipeline_stage_id')

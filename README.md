@@ -35,11 +35,11 @@ $ npm run build
 ----
 
 ## 畫面截圖
-![](https://i.imgur.com/Bd2UUZ2.png)
+![](https://i.imgur.com/Oo2gPAK.png)
 > 可以從過去各階段所紀錄的線索，釐清客戶痛點與卡關之處，並以此為切入點，重新與顧客開啟對話，提高成交的命中率
 
-![](https://i.imgur.com/jWbCBGC.png)
+![](https://i.imgur.com/jS0n6Ut.png)
 > 點擊客戶檢視詳細資訊
 
-![](https://i.imgur.com/d4R85xa.png)
+![](https://i.imgur.com/Rsr1mZf.png)
 > 設定客戶生命週期階段

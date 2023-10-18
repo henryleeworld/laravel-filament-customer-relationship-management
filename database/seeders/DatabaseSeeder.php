@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
             PipelineStageSeeder::class,
             CustomerSeeder::class,
+            CustomFieldSeeder::class,
         ]);
     }
 }

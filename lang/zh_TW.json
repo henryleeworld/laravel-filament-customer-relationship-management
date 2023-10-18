@@ -1,12 +1,16 @@
 {
     ", ": "，",
     "Add Document": "新增文件",
+    "Add another Field": "新增不同的欄位",
     "Additional Details": "額外資料",
+    "Additional fields": "額外欄位",
     "All Customers": "全部客戶",
     "Archived": "已封存",
     "Color": "顏色",
     "Comments": "註解",
     "Contact Information": "聯絡資料",
+    "custom field": "自訂欄位",
+    "Custom Fields": "自訂欄位",
     "customer": "客戶",
     "Customer Details": "客戶資料",
     "Customer Pipeline Updated": "客戶管線已更新",
@@ -16,6 +20,7 @@
     "Documents": "文件",
     "Download Document": "下載文件",
     "Email": "電子郵件",
+    "Field Type": "欄位類型",
     "File path": "檔案路徑",
     "First name": "名字",
     "Is default": "是否為預設",
@@ -53,5 +58,6 @@
     "Tag has been deleted.": "標籤已被刪除。",
     "Tag is in use": "標籤已使用",
     "Tag is in use by customers.": "標籤已被客戶使用。",
-    "Tags": "標籤"
+    "Tags": "標籤",
+    "Value": "值"
 }
