@@ -98,8 +98,8 @@ class CustomerResource extends Resource
                 Forms\Components\Section::make(__('Documents'))
                     ->visibleOn('edit')
                     ->schema([
-                        Forms\Components\Repeater::make('customerDocuments')
-                            ->relationship('customerDocuments')
+                        Forms\Components\Repeater::make('documents')
+                            ->relationship('documents')
                             ->hiddenLabel()
                             ->reorderable(false)
                             ->addActionLabel(__('Add Document'))
@@ -186,9 +186,9 @@ class CustomerResource extends Resource
                     )
                     ->columns(),
                 Section::make(__('Documents'))
-                    ->hidden(fn($record) => $record->customerDocuments->isEmpty())
+                    ->hidden(fn($record) => $record->documents->isEmpty())
                     ->schema([
-                        RepeatableEntry::make('customerDocuments')
+                        RepeatableEntry::make('documents')
                             ->hiddenLabel()
                             ->schema([
                                 TextEntry::make('file_path')
@@ -272,8 +272,13 @@ class CustomerResource extends Resource
                     ])
                     ->action(function (Customer $customer, array $data): void {
                         $customer->pipeline_stage_id = $data['pipeline_stage_id'];
-                        $customer->temporary_notes_field = $data['notes'];
                         $customer->save();
+
+                        $customer->pipelineStageLogs()->create([
+                            'pipeline_stage_id' => $data['pipeline_stage_id'],
+                            'notes' => $data['notes'],
+                            'user_id' => auth()->id()
+                        ]);
 
                         Notification::make()
                             ->title(__('Customer Pipeline Updated'))
