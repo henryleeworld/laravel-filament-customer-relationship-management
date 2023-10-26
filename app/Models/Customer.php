@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'first_name',
@@ -20,7 +21,8 @@ class Customer extends Model
         'phone_number',
         'description',
         'lead_source_id',
-        'pipeline_stage_id'
+        'pipeline_stage_id',
+        'employee_id',
     ];
 
     public static function booted(): void
@@ -28,19 +30,22 @@ class Customer extends Model
         self::created(function (Customer $customer) {
             $customer->pipelineStageLogs()->create([
                 'pipeline_stage_id' => $customer->pipeline_stage_id,
+                'employee_id' => $customer->employee_id,
                 'user_id' => auth()->check() ? auth()->id() : null
             ]);
         });
-    }
 
-    public function customFields(): HasMany
-    {
-        return $this->hasMany(CustomFieldCustomer::class);
-    }
+        self::updated(function (Customer $customer) {
+            $lastLog = $customer->pipelineStageLogs()->whereNotNull('employee_id')->latest()->first();
 
-    public function documents(): HasMany
-    {
-        return $this->hasMany(Document::class);
+            if ($customer->employee_id !== $lastLog) {
+                $customer->pipelineStageLogs()->create([
+                    'employee_id' => $customer->employee_id,
+                    'notes' => is_null($customer->employee_id) ? 'Employee removed' : '',
+                    'user_id' => auth()->id()
+                ]);
+            }
+        });
     }
 
     public function leadSource(): BelongsTo
@@ -61,5 +66,20 @@ class Customer extends Model
     public function pipelineStageLogs(): HasMany
     {
         return $this->hasMany(CustomerPipelineStage::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomFieldCustomer::class);
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'employee_id');
     }
 }

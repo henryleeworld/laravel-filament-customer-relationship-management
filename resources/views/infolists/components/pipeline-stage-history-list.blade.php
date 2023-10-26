@@ -3,13 +3,22 @@
     @foreach($getState() as $pipelineLog)
         <div class="mb-4">
             <div class="">
-                <span class="font-bold">{{ $pipelineLog->user?->name ?? __('System') }}</span>{{ __(', ') }}<span x-data="{}" x-tooltip="{
+                <span class="font-bold">{{ $pipelineLog->user?->name ?? __('System') }}</span>, <span x-data="{}" x-tooltip="{
                         content: '{{ $pipelineLog->created_at }}',
                         theme: $store.theme,
                     }">{{ $pipelineLog->created_at->diffForHumans() }}</span>
             </div>
-            <div class="">
-                <span class="font-bold">{{ __('Pipeline Stage:') }}</span> {{ $pipelineLog->pipelineStage->name }}
+            <div class="flex flex-col">
+                @if($pipelineLog->pipelineStage)
+                    <p>
+                        <span class="font-bold">{{ __('Pipeline Stage:') }}</span> {{ $pipelineLog->pipelineStage?->name }}
+                    </p>
+                @endif
+                @if($pipelineLog->employee)
+                    <p>
+                        <span class="font-bold">{{ __('Assigned Employee:') }}</span> {{ $pipelineLog->employee?->name }}
+                    </p>
+                @endif
             </div>
             @if($pipelineLog->notes)
                 <div class="">

@@ -7,6 +7,8 @@ use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Models\Customer;
 use App\Models\CustomField;
 use App\Models\PipelineStage;
+use App\Models\Role;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -32,6 +34,13 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Section::make(__('Employee Information'))
+                    ->schema([
+                        Forms\Components\Select::make('employee_id')
+                            ->label(__('Employee name'))
+                            ->options(User::where('role_id', Role::where('name', 'Employee')->first()->id)->pluck('name', 'id'))
+                    ])
+                    ->hidden(!auth()->user()->isAdmin()),
                 Forms\Components\Section::make(__('Customer Details'))
                     ->schema([
                         Forms\Components\TextInput::make('first_name')
@@ -70,6 +79,23 @@ class CustomerResource extends Resource
                             ->default(PipelineStage::where('is_default', true)->first()?->id)
                     ])
                     ->columns(3),
+                Forms\Components\Section::make(__('Documents'))
+                    ->visibleOn('edit')
+                    ->schema([
+                        Forms\Components\Repeater::make('documents')
+                            ->relationship('documents')
+                            ->hiddenLabel()
+                            ->reorderable(false)
+                            ->addActionLabel(__('Add Document'))
+                            ->schema([
+                                Forms\Components\FileUpload::make('file_path')
+                                    ->label(__('File path'))
+                                    ->required(),
+                                Forms\Components\Textarea::make('comments')
+                                    ->label(__('Comments')),
+                            ])
+                            ->columns()
+                    ]),
                 Forms\Components\Section::make(__('Additional fields'))
                     ->schema([
                         Forms\Components\Repeater::make('fields')
@@ -95,23 +121,6 @@ class CustomerResource extends Resource
                             ->addActionLabel(__('Add another Field'))
                             ->columns(),
                     ]),
-                Forms\Components\Section::make(__('Documents'))
-                    ->visibleOn('edit')
-                    ->schema([
-                        Forms\Components\Repeater::make('documents')
-                            ->relationship('documents')
-                            ->hiddenLabel()
-                            ->reorderable(false)
-                            ->addActionLabel(__('Add Document'))
-                            ->schema([
-                                Forms\Components\FileUpload::make('file_path')
-                                    ->label(__('File path'))
-                                    ->required(),
-                                Forms\Components\Textarea::make('comments')
-                                    ->label(__('Comments')),
-                            ])
-                            ->columns()
-                    ])
             ]);
     }
 
@@ -215,8 +224,11 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('employee.name')
+                    ->label(__('Employee name'))
+                    ->hidden(!auth()->user()->isAdmin()),
                 Tables\Columns\TextColumn::make('first_name')
-                    ->label(__('Name'))
+                    ->label(__('Customer name'))
                     ->formatStateUsing(function ($record) {
                         $tagsList = view('customer.tagsList', ['tags' => $record->tags])->render();
 
