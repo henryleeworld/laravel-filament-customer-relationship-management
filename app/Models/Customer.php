@@ -48,14 +48,25 @@ class Customer extends Model
         });
     }
 
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomFieldCustomer::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'employee_id');
+    }
+
+
     public function leadSource(): BelongsTo
     {
         return $this->belongsTo(LeadSource::class);
-    }
-
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class);
     }
 
     public function pipelineStage(): BelongsTo
@@ -68,18 +79,8 @@ class Customer extends Model
         return $this->hasMany(CustomerPipelineStage::class);
     }
 
-    public function documents(): HasMany
+    public function tags(): BelongsToMany
     {
-        return $this->hasMany(Document::class);
-    }
-
-    public function customFields(): HasMany
-    {
-        return $this->hasMany(CustomFieldCustomer::class);
-    }
-
-    public function employee(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'employee_id');
+        return $this->belongsToMany(Tag::class);
     }
 }

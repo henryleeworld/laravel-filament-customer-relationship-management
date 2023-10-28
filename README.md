@@ -46,3 +46,6 @@ $ npm run build
 
 ![](https://i.imgur.com/3TbxSB1.png)
 > 設定客戶生命週期階段
+
+![](https://i.imgur.com/87hX0ag.png)
+> 邀請對象按一下邀請電子郵件中的「建立帳戶」按鈕進入註冊

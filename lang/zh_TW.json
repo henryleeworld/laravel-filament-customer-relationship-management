@@ -1,5 +1,6 @@
 {
     ", ": "，",
+    "Accept Invitation": "接受邀請",
     "Add Document": "新增文件",
     "Add another Field": "新增不同的欄位",
     "Additional Details": "額外資料",
@@ -10,6 +11,8 @@
     "Color": "顏色",
     "Comments": "註解",
     "Contact Information": "聯絡資料",
+    "Create Account": "建立帳戶",
+    "Create your user to accept an invitation": "建立您的使用者以接受邀請",
     "custom field": "自訂欄位",
     "Custom Fields": "自訂欄位",
     "customer": "客戶",
@@ -29,6 +32,9 @@
     "Field Type": "欄位類型",
     "File path": "檔案路徑",
     "First name": "名字",
+    "If you did not expect to receive an invitation to this team, you may discard this email.": "如果您沒有預期會收到這個團隊的邀請，您可以刪除這封郵件。",
+    "Invitation to join :app_name": "邀請加入:app_name",
+    "Invite user": "邀請使用者",
     "Is default": "是否為預設",
     "Last name": "姓氏",
     "Lead and Stage Information": "潛在和階段資料",
@@ -68,7 +74,10 @@
     "Tag is in use": "標籤已使用",
     "Tag is in use by customers.": "標籤已被客戶使用。",
     "Tags": "標籤",
+    "To accept the invitation - click on the button below and create an account:": "要接受邀請－請點擊下方的按鈕並建立帳戶：",
     "user": "使用者",
+    "User invited successfully!": "使用者邀請成功！",
     "Users": "使用者",
-    "Value": "值"
+    "Value": "值",
+    "You have been invited to join :app_name": "您已被邀請加入:app_name"
 }
