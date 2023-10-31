@@ -11,8 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use SoftDeletes;
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'first_name',
@@ -47,6 +46,10 @@ class Customer extends Model
             }
         });
     }
+    public function completedTasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->where('is_completed', true);
+    }
 
     public function customFields(): HasMany
     {
@@ -63,6 +66,10 @@ class Customer extends Model
         return $this->belongsTo(User::class, 'employee_id');
     }
 
+    public function incompleteTasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->where('is_completed', false);
+    }
 
     public function leadSource(): BelongsTo
     {
@@ -82,5 +89,10 @@ class Customer extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

@@ -8,12 +8,15 @@ use App\Models\Customer;
 use App\Models\CustomField;
 use App\Models\PipelineStage;
 use App\Models\Role;
+use App\Models\Task;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists\Components\Actions\Action;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
@@ -216,7 +219,75 @@ class CustomerResource extends Resource
                             ->label('')
                             ->view('infolists.components.pipeline-stage-history-list')
                     ])
-                    ->collapsible()
+                    ->collapsible(),
+                Tabs::make(__('Tasks'))
+                    ->tabs([
+                        Tabs\Tab::make('Completed')
+                            ->label(__('Completed'))
+                            ->badge(fn($record) => $record->completedTasks->count())
+                            ->schema([
+                                RepeatableEntry::make('completedTasks')
+                                    ->hiddenLabel()
+                                    ->schema([
+                                        TextEntry::make('description')
+                                            ->label(__('Description'))
+                                            ->html()
+                                            ->columnSpanFull(),
+                                        TextEntry::make('employee.name')
+                                            ->label(__('Employee name'))
+                                            ->hidden(fn($state) => is_null($state)),
+                                        TextEntry::make('due_date')
+                                            ->label(__('Due date'))
+                                            ->hidden(fn($state) => is_null($state))
+                                            ->date(),
+                                    ])
+                                    ->columns()
+                            ]),
+                        Tabs\Tab::make('Incomplete')
+                            ->label(__('Incomplete'))
+                            ->badge(fn($record) => $record->incompleteTasks->count())
+                            ->schema([
+                                RepeatableEntry::make('incompleteTasks')
+                                    ->hiddenLabel()
+                                    ->schema([
+                                        TextEntry::make('description')
+                                            ->label(__('Description'))
+                                            ->html()
+                                            ->columnSpanFull(),
+                                        TextEntry::make('employee.name')
+                                            ->label(__('Employee name'))
+                                            ->hidden(fn($state) => is_null($state)),
+                                        TextEntry::make('due_date')
+                                            ->label(__('Due date'))
+                                            ->hidden(fn($state) => is_null($state))
+                                            ->date(),
+                                        TextEntry::make('is_completed')
+                                            ->label(__('Is completed'))
+                                            ->formatStateUsing(function ($state) {
+                                                return $state ? __('Yes') : __('No');
+                                            })
+                                            ->suffixAction(
+                                                Action::make('complete')
+                                                    ->label(__('Complete'))
+                                                    ->button()
+                                                    ->requiresConfirmation()
+                                                    ->modalHeading(__('Mark task as completed?'))
+                                                    ->modalDescription(__('Are you sure you want to mark this task as completed?'))
+                                                    ->action(function (Task $record) {
+                                                        $record->is_completed = true;
+                                                        $record->save();
+
+                                                        Notification::make()
+                                                            ->title(__('Task marked as completed'))
+                                                            ->success()
+                                                            ->send();
+                                                    })
+                                            ),
+                                    ])
+                                    ->columns(3)
+                            ])
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -297,6 +368,31 @@ class CustomerResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Tables\Actions\Action::make('Add Task')
+                    ->label(__('Add Task'))
+                    ->icon('heroicon-s-clipboard-document')
+                    ->form([
+                        Forms\Components\RichEditor::make('description')
+                            ->label(__('Description'))
+                            ->required(),
+                        Forms\Components\Select::make('user_id')
+                            ->label(__('Employee name'))
+                            ->preload()
+                            ->searchable()
+                            ->relationship('employee', 'name'),
+                        Forms\Components\DatePicker::make('due_date')
+                            ->label(__('Due date'))
+                            ->native(false),
+
+                    ])
+                    ->action(function (Customer $customer, array $data) {
+                        $customer->tasks()->create($data);
+
+                        Notification::make()
+                            ->title(__('Task created successfully'))
+                            ->success()
+                            ->send();
+                    })
             ])
             ->recordUrl(function ($record) {
                 if ($record->trashed()) {
