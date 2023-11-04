@@ -11,6 +11,7 @@
         "laravel/framework": "^10.29",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "laraveldaily/laravel-invoices": "^3.1",
         "saade/filament-fullcalendar": "^3.0"
     },
     "require-dev": {

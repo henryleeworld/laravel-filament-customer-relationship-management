@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
+use App\Filament\Resources\QuoteResource\Pages\CreateQuote;
 use App\Models\Customer;
 use App\Models\CustomField;
 use App\Models\PipelineStage;
@@ -334,65 +335,73 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->hidden(fn($record) => $record->trashed()),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-                Tables\Actions\Action::make('Move to Stage')
-                    ->label(__('Move to Stage'))
-                    ->hidden(fn($record) => $record->trashed())
-                    ->icon('heroicon-m-pencil-square')
-                    ->form([
-                        Forms\Components\Select::make('pipeline_stage_id')
-                            ->label(__('Status'))
-                            ->options(PipelineStage::pluck('name', 'id')->toArray())
-                            ->default(function (Customer $record) {
-                                $currentPosition = $record->pipelineStage->position;
-                                return PipelineStage::where('position', '>', $currentPosition)->first()?->id;
-                            }),
-                        Forms\Components\Textarea::make('notes')
-                            ->label(__('Notes'))
-                    ])
-                    ->action(function (Customer $customer, array $data): void {
-                        $customer->pipeline_stage_id = $data['pipeline_stage_id'];
-                        $customer->save();
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->hidden(fn($record) => $record->trashed()),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\Action::make('Move to Stage')
+                        ->label(__('Move to Stage'))
+                        ->hidden(fn($record) => $record->trashed())
+                        ->icon('heroicon-m-pencil-square')
+                        ->form([
+                            Forms\Components\Select::make('pipeline_stage_id')
+                                ->label(__('Status'))
+                                ->options(PipelineStage::pluck('name', 'id')->toArray())
+                                ->default(function (Customer $record) {
+                                    $currentPosition = $record->pipelineStage->position;
+                                    return PipelineStage::where('position', '>', $currentPosition)->first()?->id;
+                                }),
+                            Forms\Components\Textarea::make('notes')
+                                ->label(__('Notes'))
+                        ])
+                        ->action(function (Customer $customer, array $data): void {
+                            $customer->pipeline_stage_id = $data['pipeline_stage_id'];
+                            $customer->save();
 
-                        $customer->pipelineStageLogs()->create([
-                            'pipeline_stage_id' => $data['pipeline_stage_id'],
-                            'notes' => $data['notes'],
-                            'user_id' => auth()->id()
-                        ]);
+                            $customer->pipelineStageLogs()->create([
+                                'pipeline_stage_id' => $data['pipeline_stage_id'],
+                                'notes' => $data['notes'],
+                                'user_id' => auth()->id()
+                            ]);
 
-                        Notification::make()
-                            ->title(__('Customer Pipeline Updated'))
-                            ->success()
-                            ->send();
-                    }),
-                Tables\Actions\Action::make('Add Task')
-                    ->label(__('Add Task'))
-                    ->icon('heroicon-s-clipboard-document')
-                    ->form([
-                        Forms\Components\RichEditor::make('description')
-                            ->label(__('Description'))
-                            ->required(),
-                        Forms\Components\Select::make('user_id')
-                            ->label(__('Employee name'))
-                            ->preload()
-                            ->searchable()
-                            ->relationship('employee', 'name'),
-                        Forms\Components\DatePicker::make('due_date')
-                            ->label(__('Due date'))
-                            ->native(false),
+                            Notification::make()
+                                ->title(__('Customer Pipeline Updated'))
+                                ->success()
+                                ->send();
+                        }),
+                    Tables\Actions\Action::make('Add Task')
+                        ->label(__('Add Task'))
+                        ->icon('heroicon-s-clipboard-document')
+                        ->form([
+                            Forms\Components\RichEditor::make('description')
+                                ->label(__('Description'))
+                                ->required(),
+                            Forms\Components\Select::make('user_id')
+                                ->label(__('Employee name'))
+                                ->preload()
+                                ->searchable()
+                                ->relationship('employee', 'name'),
+                            Forms\Components\DatePicker::make('due_date')
+                                ->label(__('Due date'))
+                                ->native(false),
 
-                    ])
-                    ->action(function (Customer $customer, array $data) {
-                        $customer->tasks()->create($data);
+                        ])
+                        ->action(function (Customer $customer, array $data) {
+                            $customer->tasks()->create($data);
 
-                        Notification::make()
-                            ->title(__('Task created successfully'))
-                            ->success()
-                            ->send();
-                    })
+                            Notification::make()
+                                ->title(__('Task created successfully'))
+                                ->success()
+                                ->send();
+                        }),
+                    Tables\Actions\Action::make('Create Quote')
+                        ->label(__('Create Quote'))
+                        ->icon('heroicon-m-book-open')
+                        ->url(function ($record) {
+                            return CreateQuote::getUrl(['customer_id' => $record->id]);
+                        })
+                ])
             ])
             ->recordUrl(function ($record) {
                 if ($record->trashed()) {
