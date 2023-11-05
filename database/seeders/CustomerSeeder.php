@@ -15,8 +15,13 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
         $defaultPipelineStage = PipelineStage::where('is_default', true)->first()->id;
-        Customer::factory()->count(10)->create([
-            'pipeline_stage_id' => $defaultPipelineStage,
-        ]);
+        Customer::factory()
+            ->count(10)
+            ->create([
+                'pipeline_stage_id' => $defaultPipelineStage,
+            ])
+            ->each(function (Customer $customer) {
+                $customer->tags()->attach(random_int(1, 2));
+            });
     }
 }

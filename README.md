@@ -35,19 +35,19 @@ $ npm run build
 ----
 
 ## 畫面截圖
-![](https://i.imgur.com/uV4OLyu.png)
+![](https://i.imgur.com/3QDIYGh.png)
 > 瞭解客戶的進展情況
 
-![](https://i.imgur.com/65cFjes.png)
+![](https://i.imgur.com/8iGPxfB.png)
 > 以免任務行程時間發生衝突
 
-![](https://i.imgur.com/6zCnU1i.png)
+![](https://i.imgur.com/ShTRCla.png)
 > 可以從過去各階段所紀錄的線索，釐清客戶痛點與卡關之處，並以此為切入點，重新與顧客開啟對話，提高成交的命中率
 
-![](https://i.imgur.com/7Dp4Kea.png)
+![](https://i.imgur.com/dKbnDi3.png)
 > 點擊客戶檢視詳細資訊
 
-![](https://i.imgur.com/gHE0d0k.png)
+![](https://i.imgur.com/jRyemZ6.png)
 > 設定客戶生命週期階段
 
 ![](https://i.imgur.com/87hX0ag.png)

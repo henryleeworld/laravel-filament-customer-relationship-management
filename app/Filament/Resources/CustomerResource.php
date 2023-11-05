@@ -295,6 +295,9 @@ class CustomerResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function ($query) {
+                return $query->with('tags');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('employee.name')
                     ->label(__('Employee name'))
