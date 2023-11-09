@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::redirect('/', '/admin/login');
+Route::get('/', function () {
+    return redirect()->to('/admin');
+});
 Route::middleware('signed')
     ->get('invitation/{invitation}/accept', AcceptInvitation::class)
     ->name('invitation.accept');
