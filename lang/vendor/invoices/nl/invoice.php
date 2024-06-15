@@ -3,6 +3,7 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Dutch Invoice Language Lines
     | Factuur Taal Lijnen
     |--------------------------------------------------------------------------
     */
@@ -35,4 +36,5 @@ return [
     'shipping'               => 'Verzending',
     'paid'                   => 'Betaald',
     'due'                    => 'Openstaand',
+    'page'                   => 'Side',
 ];

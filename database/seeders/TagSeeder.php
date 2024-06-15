@@ -9,13 +9,13 @@ use Illuminate\Database\Seeder;
 class TagSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      */
     public function run(): void
     {
         $tags = [
-            'Priority',
-            'VIP'
+            __('Priority'),
+            __('VIP')
         ];
 
         foreach ($tags as $tag) {

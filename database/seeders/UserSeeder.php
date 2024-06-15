@@ -10,12 +10,12 @@ use Illuminate\Database\Seeder;
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      */
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Test Admin',
+            'name' => __('Administrator'),
             'email' => 'admin@admin.com',
             'role_id' => Role::where('name', 'Admin')->first()->id,
         ]);

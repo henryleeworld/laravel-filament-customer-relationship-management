@@ -9,30 +9,30 @@ use Illuminate\Database\Seeder;
 class PipelineStageSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      */
     public function run(): void
     {
         $pipelineStages = [
             [
-                'name' => 'Lead',
+                'name' => __('Lead'),
                 'position' => 1,
                 'is_default' => true,
             ],
             [
-                'name' => 'Contact Made',
+                'name' => __('Contact Made'),
                 'position' => 2,
             ],
             [
-                'name' => 'Proposal Made',
+                'name' => __('Proposal Made'),
                 'position' => 3,
             ],
             [
-                'name' => 'Proposal Rejected',
+                'name' => __('Proposal Rejected'),
                 'position' => 4,
             ],
             [
-                'name' => 'Customer',
+                'name' => __('Customer'),
                 'position' => 5,
             ]
         ];

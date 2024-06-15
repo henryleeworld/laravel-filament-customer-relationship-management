@@ -2,6 +2,12 @@
 
 return [
 
+    'column_toggle' => [
+
+        'heading' => '欄位',
+
+    ],
+
     'fields' => [
 
         'search' => [

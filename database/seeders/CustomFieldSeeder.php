@@ -9,15 +9,15 @@ use Illuminate\Database\Seeder;
 class CustomFieldSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      */
     public function run(): void
     {
         $customFields = [
-            'Birth Date',
-            'Company',
-            'Job Title',
-            'Family Members',
+            __('Birth Date'),
+            __('Company'),
+            __('Job Title'),
+            __('Family Members'),
         ];
 
         foreach ($customFields as $customField) {

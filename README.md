@@ -1,9 +1,9 @@
-# Laravel 10 Filament 客戶關係管理
+# Laravel 11 Filament 客戶關係管理
 
 Filament 客戶關係管理採用快速建立簡捷的 TALL（Tailwind CSS、Alpine.js、Laravel 和 Livewire）堆疊應用程式的工具組，能夠幫助你輕鬆快速地找到潛在客戶，並且將他們精準地歸類，進而幫助銷售與行銷人員將精力投入在正確的客戶身上，銷售人員能夠因此提升交易的成功機率，行銷人員也能更容易地將潛在客戶轉換為有效客戶。
 
 ## 使用方式
-- 打開 php.ini 檔案，啟用 PHP 擴充模組 intl，並重啟服務器。
+- 打開 php.ini 檔案，啟用 PHP 擴充模組 intl 和 zip，並重啟服務器。
 - 把整個專案複製一份到你的電腦裡，這裡指的「內容」不是只有檔案，而是指所有整個專案的歷史紀錄、分支、標籤等內容都會複製一份下來。
 ```sh
 $ git clone
@@ -35,20 +35,20 @@ $ npm run build
 ----
 
 ## 畫面截圖
-![](https://i.imgur.com/CxpUnGA.png)
+![](https://i.imgur.com/chL1F8d.png)
 > 瞭解客戶的進展情況
 
-![](https://i.imgur.com/eJ06DjP.png)
+![](https://i.imgur.com/ExyHTRD.png)
 > 以免任務行程時間發生衝突
 
-![](https://i.imgur.com/5ppuS6d.png)
+![](https://i.imgur.com/pRlyDrD.png)
 > 可以從過去各階段所紀錄的線索，釐清客戶痛點與卡關之處，並以此為切入點，重新與顧客開啟對話，提高成交的命中率
 
-![](https://i.imgur.com/4iK9kvE.png)
+![](https://i.imgur.com/xlJE1u2.png)
 > 點擊客戶檢視詳細資訊
 
-![](https://i.imgur.com/BReHG3T.png)
+![](https://i.imgur.com/nMwysdH.png)
 > 設定客戶生命週期階段
 
-![](https://i.imgur.com/87hX0ag.png)
+![](https://i.imgur.com/0ZOW1M6.png)
 > 邀請對象按一下邀請電子郵件中的「建立帳戶」按鈕進入註冊
