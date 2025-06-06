@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "filament/filament": "^3.2",
-        "laravel/framework": "^11.10",
+        "laravel/framework": "^11.11",
         "laravel/tinker": "^2.9",
         "laraveldaily/laravel-invoices": "^4.0",
         "saade/filament-fullcalendar": "^3.2"
